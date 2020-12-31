@@ -52,10 +52,8 @@ fn main() {
         
         // Add on clicks
         search_button.connect_clicked(move |_| {
-            let entry_text = path_entry.get_text().as_str();
-            let path = std::path::Path::new(entry_text);
-    
-            let file_result = finder::find_files(path);
+            let entry_text = String::from(path_entry.get_text().as_str());  
+            let file_result = finder::find_files(&entry_text);
             match file_result {
                 Err(e) => eprintln!("{}", e),
                 Ok(files) => {

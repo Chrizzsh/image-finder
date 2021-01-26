@@ -21,6 +21,7 @@ use gtk::{
     // Layout
     Box,
     Orientation,
+    Scrollbar
 };
 
 mod finder;
@@ -65,10 +66,14 @@ fn main() {
             }
         });
         
+        // Add scrollable treeview
+        let scrollable_tree = gtk::ScrolledWindow::new::<gtk::Adjustment, gtk::Adjustment>(None, None);
+        scrollable_tree.add(&tree);
+
         // Layout stuff
         let v_box = Box::new(Orientation::Vertical, 2);
         v_box.pack_start(&search_box, false, false, 1);
-        v_box.pack_end(&tree, true, true, 1);
+        v_box.pack_end(&scrollable_tree, true, true, 1);
 
         window.add(&v_box);
         window.show_all();
@@ -80,6 +85,7 @@ fn main() {
 fn create_tree() -> TreeView {
     let tree = TreeView::new();
     tree.set_headers_visible(true);
+    tree.set_property_resize_mode(gtk::ResizeMode::Queue);
 
     append_column(&tree, 0, "Filename");
     append_column(&tree, 1, "Size");
@@ -101,6 +107,15 @@ fn append_column(tree: &TreeView, id: i32, name: &str) {
 
 fn create_model() -> ListStore {
     let model = ListStore::new(&[String::static_type(), u32::static_type()]);
+    let connect_res = model.connect("GDK_BUTTON_PRESS", true, |_| {
+        println!("hei");
+        None
+    });
+    
+    match connect_res {
+        Ok(id) => println!("{:?}", id),
+        Err(e) => eprintln!("{}", e),
+    };
 
     model
 }
